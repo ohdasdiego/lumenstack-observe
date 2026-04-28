@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LumenStack · Observe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/static/css/dashboard.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-suite">LumenStack</span>
+      <span class="brand-divider">/</span>
+      <span class="brand-tool">Observe</span>
+    </div>
+    <div class="header-meta">
+      <span id="live-clock"></span>
+      <span class="pill">LLM Observability</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Summary Cards -->
+    <section class="cards">
+      <div class="card">
+        <div class="card-label">Total Calls</div>
+        <div class="card-value" id="stat-total">—</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Avg Latency</div>
+        <div class="card-value" id="stat-latency">—</div>
+        <div class="card-unit">ms</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Cost</div>
+        <div class="card-value" id="stat-cost">—</div>
+        <div class="card-unit">USD</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Error Rate</div>
+        <div class="card-value" id="stat-errors">—</div>
+        <div class="card-unit">%</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Total Tokens</div>
+        <div class="card-value" id="stat-tokens">—</div>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="chart-section">
+      <div class="section-header">
+        <h2>Calls Over Time</h2>
+        <div class="range-tabs">
+          <button class="range-btn active" data-days="7">7d</button>
+          <button class="range-btn" data-days="14">14d</button>
+          <button class="range-btn" data-days="30">30d</button>
+        </div>
+      </div>
+      <canvas id="timeline-chart"></canvas>
+    </section>
+
+    <!-- Test Query Panel -->
+    <section class="query-section">
+      <div class="section-header">
+        <h2>Send Test Query</h2>
+      </div>
+      <div class="query-form">
+        <textarea id="prompt-input" placeholder="Enter a prompt to send through the observed pipeline..."></textarea>
+        <div class="query-controls">
+          <select id="model-select">
+            <option value="claude-haiku-4-5">claude-haiku-4-5</option>
+            <option value="claude-sonnet-4-6">claude-sonnet-4-6</option>
+          </select>
+          <button id="send-btn" onclick="sendQuery()">Send</button>
+        </div>
+        <div id="query-result" class="query-result hidden"></div>
+      </div>
+    </section>
+
+    <!-- Call Log -->
+    <section class="log-section">
+      <div class="section-header">
+        <h2>Recent Calls</h2>
+        <span id="log-count" class="pill-sm"></span>
+      </div>
+      <div class="table-wrap">
+        <table id="call-log">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Model</th>
+              <th>Source</th>
+              <th>Tokens In</th>
+              <th>Tokens Out</th>
+              <th>Latency</th>
+              <th>Cost</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="log-body">
+            <tr><td colspan="8" class="empty">No calls logged yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
