@@ -10,20 +10,54 @@
   <link rel="stylesheet" href="/static/css/dashboard.css" />
 </head>
 <body>
+
+  <!-- ══════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════ -->
   <header>
-    <div class="brand">
-      <span class="brand-suite">LumenStack</span>
-      <span class="brand-divider">/</span>
-      <span class="brand-tool">Observe</span>
+    <div class="header-left">
+      <a class="logo-mark" href="/">
+        <div class="logo-icon">
+          <!-- LumenStack logo: stylized L + beam/ray mark, blue family -->
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="26" height="26" rx="4" fill="#0d1526" stroke="#243a5e" stroke-width="1"/>
+            <!-- L stem -->
+            <rect x="7" y="6" width="3" height="16" rx="1" fill="#4d9fff"/>
+            <!-- L foot -->
+            <rect x="7" y="19" width="10" height="3" rx="1" fill="#4d9fff"/>
+            <!-- Ray / beam lines emanating right -->
+            <rect x="14" y="8" width="7" height="1.5" rx="0.75" fill="#7bb8ff" opacity="0.9"/>
+            <rect x="14" y="12" width="5" height="1.5" rx="0.75" fill="#7bb8ff" opacity="0.6"/>
+            <rect x="14" y="16" width="6" height="1.5" rx="0.75" fill="#7bb8ff" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="brand">
+          <span class="brand-suite">LumenStack</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-tool">Observe</span>
+        </div>
+      </a>
+
+      <nav class="suite-nav">
+        <a href="#" class="active">Observe</a>
+        <a href="#" class="inactive" title="Coming soon">Eval</a>
+        <a href="#" class="inactive" title="Coming soon">Prompts</a>
+        <a href="#" class="inactive" title="Coming soon">Models</a>
+      </nav>
     </div>
-    <div class="header-meta">
-      <span id="live-clock"></span>
+
+    <div class="header-right">
+      <span class="live-clock" id="live-clock"></span>
       <span class="pill">LLM Observability</span>
     </div>
   </header>
 
+  <!-- ══════════════════════════════════════
+       MAIN
+  ══════════════════════════════════════ -->
   <main>
-    <!-- Summary Cards -->
+
+    <!-- Stat Cards -->
     <section class="cards">
       <div class="card">
         <div class="card-label">Total Calls</div>
@@ -37,7 +71,6 @@
       <div class="card">
         <div class="card-label">Total Cost</div>
         <div class="card-value" id="stat-cost">—</div>
-        <div class="card-unit">USD</div>
       </div>
       <div class="card">
         <div class="card-label">Error Rate</div>
@@ -50,26 +83,37 @@
       </div>
     </section>
 
-    <!-- Chart -->
-    <section class="chart-section">
-      <div class="section-header">
-        <h2>Calls Over Time</h2>
-        <div class="range-tabs">
-          <button class="range-btn active" data-days="7">7d</button>
-          <button class="range-btn" data-days="14">14d</button>
-          <button class="range-btn" data-days="30">30d</button>
+    <!-- Chart + Model Breakdown -->
+    <div class="row-2">
+      <section class="panel">
+        <div class="section-header">
+          <h2>Calls Over Time</h2>
+          <div class="range-tabs">
+            <button class="range-btn active" data-days="7">7d</button>
+            <button class="range-btn" data-days="14">14d</button>
+            <button class="range-btn" data-days="30">30d</button>
+          </div>
         </div>
-      </div>
-      <canvas id="timeline-chart"></canvas>
-    </section>
+        <canvas id="timeline-chart"></canvas>
+      </section>
+
+      <section class="panel">
+        <div class="section-header">
+          <h2>By Model</h2>
+        </div>
+        <div id="model-breakdown">
+          <p class="model-empty">No data yet.</p>
+        </div>
+      </section>
+    </div>
 
     <!-- Test Query Panel -->
-    <section class="query-section">
+    <section class="panel">
       <div class="section-header">
         <h2>Send Test Query</h2>
       </div>
       <div class="query-form">
-        <textarea id="prompt-input" placeholder="Enter a prompt to send through the observed pipeline..."></textarea>
+        <textarea id="prompt-input" placeholder="Enter a prompt to send through the observed pipeline…"></textarea>
         <div class="query-controls">
           <select id="model-select">
             <option value="claude-haiku-4-5">claude-haiku-4-5</option>
@@ -82,10 +126,15 @@
     </section>
 
     <!-- Call Log -->
-    <section class="log-section">
+    <section class="panel">
       <div class="section-header">
         <h2>Recent Calls</h2>
-        <span id="log-count" class="pill-sm"></span>
+        <div class="log-controls">
+          <select class="filter-select" id="source-filter" onchange="applyFilter()">
+            <option value="">All sources</option>
+          </select>
+          <span id="log-count" class="pill-sm"></span>
+        </div>
       </div>
       <div class="table-wrap">
         <table id="call-log">
@@ -94,6 +143,7 @@
               <th>Time</th>
               <th>Model</th>
               <th>Source</th>
+              <th>Prompt</th>
               <th>Tokens In</th>
               <th>Tokens Out</th>
               <th>Latency</th>
@@ -102,12 +152,28 @@
             </tr>
           </thead>
           <tbody id="log-body">
-            <tr><td colspan="8" class="empty">No calls logged yet.</td></tr>
+            <tr><td colspan="9" class="empty">No calls logged yet.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
+
   </main>
+
+  <!-- ══════════════════════════════════════
+       CALL DETAIL MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Call Detail</span>
+        <button class="modal-close" onclick="closeModalBtn()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
 
   <script src="/static/js/dashboard.js"></script>
 </body>
