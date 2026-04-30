@@ -37,7 +37,7 @@ python app.py
 bash run.sh
 ```
 
-Configure Nginx to proxy `127.0.0.1:5009` → `observe.ado-runner.com`
+Configure Nginx to proxy `127.0.0.1:5009` → `lumenobserve.ado-runner.com`
 
 ## Running Tests
 
@@ -63,7 +63,7 @@ LumenStack is a suite of LLM operations tools for AI engineers who need visibili
 
 | # | Tool | URL | Description |
 |---|---|---|---|
-| **1** | **Observe ← you are here** | observe.ado-runner.com | Runtime LLM observability |
+| **1** | **Observe ← you are here** | lumenobserve.ado-runner.com | Runtime LLM observability |
 | 2 | Eval | lumen.eval.ado-runner.com | Output quality evaluation |
 | 3 | Prompts | lumen.prompts.ado-runner.com | Prompt version management |
 | 4 | Models | lumen.models.ado-runner.com | Model comparison & benchmarking |
