@@ -282,7 +282,7 @@ async function sendQuery() {
 
     if (res.status === 429) {
       result.className = "query-result error";
-      result.textContent = "Rate limit reached — max 5 queries per minute. Please wait a moment and try again.";
+      result.textContent = "Rate limit reached — max 10 queries per minute. Please wait a moment and try again.";
       return;
     }
 
