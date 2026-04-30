@@ -279,6 +279,13 @@ async function sendQuery() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt, model, source: "dashboard" }),
     });
+
+    if (res.status === 429) {
+      result.className = "query-result error";
+      result.textContent = "Rate limit reached — max 5 queries per minute. Please wait a moment and try again.";
+      return;
+    }
+
     const data = await res.json();
 
     if (data.status === "error") {
